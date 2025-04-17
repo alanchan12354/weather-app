@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ReactGA from 'react-ga4'
 
 function App() {
   const [city, setCity] = useState('');
@@ -23,9 +24,9 @@ function App() {
   
     // ← Track the search in GA
     ReactGA.event({
-      category: 'User',
-      action: 'Search Weather',
-      label: city,
+      category: 'user_action',        // parameter name (optional)
+      action: 'search_weather',       // **snake_case** event name
+      label: city,                    // city name as a label
     })
   }
   
