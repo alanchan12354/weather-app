@@ -6,19 +6,29 @@ function App() {
   const [error, setError] = useState('');
 
   const search = async (e) => {
-    e.preventDefault();
-    setError(''); setData(null);
+    e.preventDefault()
+    setError('')
+    setData(null)
+  
     try {
       const res = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${import.meta.env.VITE_OWM_KEY}`
-      );
-      const json = await res.json();
-      if (res.ok) setData(json);
-      else setError(json.message);
+      )
+      const json = await res.json()
+      if (res.ok) setData(json)
+      else setError(json.message)
     } catch {
-      setError('Network error');
+      setError('Network error')
     }
-  };
+  
+    // ← Track the search in GA
+    ReactGA.event({
+      category: 'User',
+      action: 'Search Weather',
+      label: city,
+    })
+  }
+  
 
   return (
     <div style={{ maxWidth: 400, margin: '2rem auto', textAlign: 'center' }}>
