@@ -1,35 +1,50 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [city, setCity] = useState('');
+  const [data, setData] = useState(null);
+  const [error, setError] = useState('');
+
+  const search = async (e) => {
+    e.preventDefault();
+    setError(''); setData(null);
+    try {
+      const res = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${import.meta.env.VITE_OWM_KEY}`
+      );
+      const json = await res.json();
+      if (res.ok) setData(json);
+      else setError(json.message);
+    } catch {
+      setError('Network error');
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div style={{ maxWidth: 400, margin: '2rem auto', textAlign: 'center' }}>
+      <h1>Weather App</h1>
+      <form onSubmit={search}>
+        <input
+          value={city}
+          onChange={e => setCity(e.target.value)}
+          placeholder="Enter city"
+          required
+        />
+        <button type="submit">Search</button>
+      </form>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {data && (
+        <div>
+          <h2>{data.name}, {data.sys.country}</h2>
+          <p>{Math.round(data.main.temp)}°C – {data.weather[0].description}</p>
+          <img
+            src={`https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`}
+            alt="weather icon"
+          />
+        </div>
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;
